@@ -5,17 +5,21 @@
   <title>またやらかしたチェッカー</title>
   <style>
     body { font-family: sans-serif; padding: 1.5em; max-width: 600px; margin: auto; }
-    textarea, input { width: 100%; margin-bottom: 0.5em; padding: 0.3em; }
+    textarea, input { width: 95%; padding: 0.3em; }
+    input:focus { outline: 2px solid #6699ff; background-color: #eef5ff; }
     h1 { text-align: center; }
     .howto { margin-bottom: 1em; }
-    .center-button-wrapper { text-align: center; margin-bottom: 1em; }
+    .center-button-wrapper { display: flex; flex-direction: column; align-items: center; gap: 0.5em; }
     .result-label { text-align: center; font-weight: bold; margin-bottom: 0.5em; }
     .hidden { display: none; }
-    button { padding: 0.5em 1.5em; background: #6699ff; color: white; border: none; border-radius: 4px; cursor: pointer; transition: background 0.2s ease; }
+    button { width: 200px; background: #6699ff; color: white; border: none; border-radius: 4px; cursor: pointer; transition: background 0.2s ease; }
     button:hover { background: #3366cc; }
     table { width: 100%; border-collapse: collapse; margin-top: 1em; }
-    th, td { border: 1px solid #ccc; padding: 0.5em; }
+    td { border: 1px solid #ccc; padding: 0.5em; vertical-align: middle; }
+    th { border: 1px solid #ccc; padding: 0.5em; }
     th { background: #eee; }
+    editorView { margin-bottom: 1em; }
+
   </style>
 </head>
 <body>
