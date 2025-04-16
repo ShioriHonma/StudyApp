@@ -16,19 +16,8 @@
     table { width: 100%; border-collapse: collapse; margin-top: 1em; }
     th, td { border: 1px solid #ccc; padding: 0.5em; }
     th { background: #eee; }
-
-    /* === 追加改善部分（入力欄の視認性向上）=== */
-    td input[type="text"] {
-      width: 95%;
-      padding: 0.3em;
-      margin: 0;
-      box-sizing: border-box;
-    }
-
-    input[type="text"]:focus {
-      outline: 2px solid #6699ff;
-      background-color: #eef5ff;
-    }
+    td input[type="text"] { width: 95%; padding: 0.3em; margin: 0; box-sizing: border-box; }
+    input[type="text"]:focus { outline: 2px solid #6699ff; background-color: #eef5ff; }
   </style>
 </head>
 <body>
@@ -51,6 +40,12 @@
     <div class="center-button-wrapper">
       <button onclick="showEditor()">詳しく振り返る</button>
     </div>
+    <div class="center-button-wrapper">
+  <a href="https://github.com/ShioriHonma/StudyApp/tree/main" target="_blank" style="display:inline-block; margin-top:0.8em; color:#3366cc; font-size: 0.95em;">
+    ▶ 使い方・仕様説明を見る（GitHub）
+  </a>
+</div>
+
   </div>
 
   <div id="editorView" class="hidden">
@@ -70,6 +65,10 @@
       <button onclick="downloadCSV()">CSV保存</button>
       <button onclick="hideEditor()">入力画面に戻る</button>
     </div>
+    <div class="center-button-wrapper">
+  <a href="https://github.com/ShioriHonma/StudyApp/tree/main" target="_blank" style="display:inline-block; margin-top:0.8em; color:#3366cc; font-size: 0.95em;">
+    ▶ 使い方・仕様説明を見る（GitHub）
+  </a>
   </div>
 
   <script>
