@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>やらかしチェッカー</title>
+  <title>またやらかしたチェッカー</title>
   <style>
     body { font-family: sans-serif; padding: 1.5em; max-width: 600px; margin: auto; }
     textarea, input { width: 100%; margin-bottom: 0.5em; padding: 0.3em; }
@@ -19,34 +19,40 @@
   </style>
 </head>
 <body>
-  <h1>またやらかしたチェッカー</h1>
-  <div class="howto">
-    <p>① 模試などのまとまった問題数の問題を3周以上解いて、丸付けまでやる</p>
-    <p>② 「誤答」欄に間違えた問題の問題番号をカンマ(,)区切りで打ち込む</p>
-    <p>③ 「出力する」をクリック</p>
+  <div id="checkerView">
+    <h1>またやらかしたチェッカー</h1>
+    <div class="howto">
+      <p>① 模試などのまとまった問題数の問題を3周以上解いて、丸付けまでやる</p>
+      <p>② 「誤答」欄に間違えた問題の問題番号をカンマ(,)区切りで打ち込む</p>
+      <p>③ 「出力する」をクリック</p>
+    </div>
+    <input id="input1" placeholder="例: 1,2,3" />
+    <input id="input2" placeholder="例: 4,5,6" />
+    <input id="input3" placeholder="例: 7,8,9" />
+    <input id="input4" placeholder="例: 10,11,12" />
+    <div class="center-button-wrapper">
+      <button onclick="checkMistakes()">出力する</button>
+    </div>
+    <div class="result-label">↓ 3回以上間違えた問題 ↓</div>
+    <textarea id="output" readonly rows="2"></textarea>
+    <div class="center-button-wrapper">
+      <button onclick="showEditor()">詳しく振り返る</button>
+    </div>
   </div>
-  <input id="input1" placeholder="例: 1,2,3" />
-  <input id="input2" placeholder="例: 4,5,6" />
-  <input id="input3" placeholder="例: 7,8,9" />
-  <input id="input4" placeholder="例: 10,11,12" />
-  <div class="center-button-wrapper">
-    <button onclick="checkMistakes()">出力する</button>
-  </div>
-  <div class="result-label">↓ 3回以上間違えた問題 ↓</div>
-  <textarea id="output" readonly rows="2"></textarea>
-  <div class="center-button-wrapper">
-    <button onclick="showEditor()">詳しく振り返る</button>
-  </div>
+
   <div id="editorView" class="hidden">
+    <h1>克服方法編集</h1>
     <table>
       <thead>
         <tr><th>問題番号</th><th>分野</th><th>誤答理由・克服方法</th></tr>
       </thead>
       <tbody id="editTableBody"></tbody>
     </table>
-    <label>
-      保存ファイル名：<input type="text" id="filenameField" placeholder="mistakes.csv">
-    </label>
+    <div class="center-button-wrapper">
+      <label>
+        保存ファイル名：<input type="text" id="filenameField" placeholder="mistakes.csv">
+      </label>
+    </div>
     <div class="center-button-wrapper">
       <button onclick="downloadCSV()">CSV保存</button>
       <button onclick="hideEditor()">入力画面に戻る</button>
@@ -81,11 +87,13 @@
         tr.innerHTML = `<td>${num}</td><td><input type="text"/></td><td><input type="text"/></td>`;
         tbody.appendChild(tr);
       });
+      document.getElementById('checkerView').classList.add('hidden');
       document.getElementById('editorView').classList.remove('hidden');
     }
 
     function hideEditor() {
       document.getElementById('editorView').classList.add('hidden');
+      document.getElementById('checkerView').classList.remove('hidden');
     }
 
     function downloadCSV() {
