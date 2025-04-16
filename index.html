@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>またやらかしたチェッカー</title>
+  <title>やらかしチェッカー</title>
   <style>
     body { font-family: sans-serif; padding: 1.5em; max-width: 600px; margin: auto; }
     textarea, input { width: 100%; margin-bottom: 0.5em; padding: 0.3em; }
@@ -22,7 +22,7 @@
 </head>
 <body>
   <div id="checkerView">
-    <h1>またやらかしたチェッカー</h1>
+    <h1>やらかしチェッカー</h1>
     <div class="howto">
       <p>① 模試などのまとまった問題数の問題を3周以上解いて、丸付けまでやる</p>
       <p>② 「誤答」欄に間違えた問題の問題番号をカンマ(,)区切りで打ち込む</p>
@@ -49,7 +49,7 @@
   </div>
 
   <div id="editorView" class="hidden">
-    <h1>克服方法編集</h1>
+    <h1>弱点リスト編集</h1>
     <table>
       <thead>
         <tr><th>問題番号</th><th>分野</th><th>誤答理由・克服方法</th></tr>
@@ -58,7 +58,7 @@
     </table>
     <div class="center-button-wrapper">
       <label>
-        保存ファイル名：<input type="text" id="filenameField" placeholder="mistakes.csv">
+        保存ファイル名：<input type="text" id="filenameField" placeholder="問題名MMDD.csv">
       </label>
     </div>
     <div class="center-button-wrapper">
