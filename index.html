@@ -52,7 +52,7 @@
     <h1>弱点リスト編集</h1>
     <table>
       <thead>
-        <tr><th>問題番号</th><th>分野</th><th>誤答理由・克服方法</th></tr>
+        <tr><th>問題番号</th><th>概要</th><th>誤答理由・克服方法</th></tr>
       </thead>
       <tbody id="editTableBody"></tbody>
     </table>
@@ -111,7 +111,7 @@
     function downloadCSV() {
       let filename = document.getElementById('filenameField').value.trim();
       if (!filename.endsWith('.csv')) filename += '.csv';
-      const rows = ["\uFEFF問題番号,分野,誤答理由・克服方法\r\n"];
+      const rows = ["\uFEFF問題番号,概要,誤答理由・克服方法\r\n"];
       document.querySelectorAll('#editTableBody tr').forEach(tr => {
         const tds = tr.querySelectorAll('td');
         const num = tds[0].textContent;
