@@ -2,197 +2,112 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>やらかしチェッカー</title>
+  <title>またやらかしたチェッカー</title>
   <style>
-    body {
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-      max-width: 640px;
-      margin: 2em auto;
-      padding: 2em;
-      background-color: #f9f9f9;
-      color: #333;
-    }
-    h1, h3 {
-      text-align: center;
-      font-weight: bold;
-      margin-bottom: 1em;
-    }
-    input[type="text"], textarea {
-      width: 100%;
-      padding: 0.6em;
-      margin: 0.6em 0;
-      font-size: 1em;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      box-sizing: border-box;
-    }
-    button {
-      padding: 0.6em 1.2em;
-      font-size: 1em;
-      border: none;
-      border-radius: 6px;
-      background-color: #2c7be5;
-      color: white;
-      cursor: pointer;
-      transition: background-color 0.3s;
-      margin: 0.5em 0.5em 0 0;
-    }
-    button:hover {
-      background-color: #1a5fc3;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1em;
-      background-color: white;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 0.6em;
-      text-align: left;
-    }
-    th {
-      background-color: #f0f0f0;
-    }
-    .button-group {
-      margin-top: 1.5em;
-    }
-    .filename-wrapper {
-      margin-top: 1.5em;
-      display: flex;
-      align-items: center;
-      gap: 0.5em;
-    }
-    .filename-wrapper input {
-      flex: 1;
-    }
+    body { font-family: sans-serif; padding: 1.5em; max-width: 600px; margin: auto; }
+    textarea, input { width: 100%; margin-bottom: 0.5em; padding: 0.3em; }
+    h1 { text-align: center; }
+    .howto { margin-bottom: 1em; }
+    .center-button-wrapper { text-align: center; margin-bottom: 1em; }
+    .result-label { text-align: center; font-weight: bold; margin-bottom: 0.5em; }
+    .hidden { display: none; }
+    button { padding: 0.5em 1.5em; background: #6699ff; color: white; border: none; border-radius: 4px; cursor: pointer; transition: background 0.2s ease; }
+    button:hover { background: #3366cc; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1em; }
+    th, td { border: 1px solid #ccc; padding: 0.5em; }
+    th { background: #eee; }
   </style>
 </head>
 <body>
-  <div id="checkerView">
-    <h1>またやらかしたチェッカー</h1>
-    <p>1〜80の問題番号をカンマ区切りで入力（最大4欄）:</p>
-    <input type="text" id="input1" placeholder="例: 1,2,3">
-    <input type="text" id="input2" placeholder="例: 4,5,6">
-    <input type="text" id="input3" placeholder="例: 7,8,9">
-    <input type="text" id="input4" placeholder="例: 10,11,12">
-
-    <div class="button-group">
-      <button onclick="analyzeMistakes()">出力する</button>
-      <button onclick="showEditorView()">詳しく振り返る</button>
-    </div>
-
-    <h3>3回以上間違えた問題:</h3>
-    <textarea id="resultArea" rows="2" readonly></textarea>
+  <h1>またやらかしたチェッカー</h1>
+  <div class="howto">
+    <p>① 模試などのまとまった問題数の問題を3周以上解いて、丸付けまでやる</p>
+    <p>② 「誤答」欄に間違えた問題の問題番号をカンマ(,)区切りで打ち込む</p>
+    <p>③ 「出力する」をクリック</p>
   </div>
-
-  <div id="editorView" style="display: none;">
-    <h3>弱点データ編集:</h3>
-    <table id="editTable">
+  <input id="input1" placeholder="例: 1,2,3" />
+  <input id="input2" placeholder="例: 4,5,6" />
+  <input id="input3" placeholder="例: 7,8,9" />
+  <input id="input4" placeholder="例: 10,11,12" />
+  <div class="center-button-wrapper">
+    <button onclick="checkMistakes()">出力する</button>
+  </div>
+  <div class="result-label">↓ 3回以上間違えた問題 ↓</div>
+  <textarea id="output" readonly rows="2"></textarea>
+  <div class="center-button-wrapper">
+    <button onclick="showEditor()">詳しく振り返る</button>
+  </div>
+  <div id="editorView" class="hidden">
+    <table>
       <thead>
         <tr><th>問題番号</th><th>分野</th><th>誤答理由・克服方法</th></tr>
       </thead>
-      <tbody></tbody>
+      <tbody id="editTableBody"></tbody>
     </table>
-
-    <div class="filename-wrapper">
-      <label for="filenameField">保存ファイル名：</label>
-      <input type="text" id="filenameField" placeholder="例: mistakes.csv">
-    </div>
-
-    <div class="button-group">
+    <label>
+      保存ファイル名：<input type="text" id="filenameField" placeholder="mistakes.csv">
+    </label>
+    <div class="center-button-wrapper">
       <button onclick="downloadCSV()">CSV保存</button>
-      <button onclick="showCheckerView()">入力画面に戻る</button>
+      <button onclick="hideEditor()">入力画面に戻る</button>
     </div>
   </div>
 
   <script>
-    const placeholderDefault = "例: 1,2,3";
-    ["input1", "input2", "input3", "input4"].forEach(id => {
-      const input = document.getElementById(id);
-      input.addEventListener("focus", () => {
-        if (input.value === placeholderDefault) {
-          input.value = "";
-          input.style.color = "black";
-        }
-      });
-      input.addEventListener("blur", () => {
-        if (input.value.trim() === "") {
-          input.value = placeholderDefault;
-          input.style.color = "gray";
-        }
-      });
-      input.value = placeholderDefault;
-      input.style.color = "gray";
-    });
-
-    function analyzeMistakes() {
-      const inputs = ["input1", "input2", "input3", "input4"]
-        .map(id => document.getElementById(id).value)
-        .filter(s => !s.startsWith("例:"))
-        .join(",");
+    function checkMistakes() {
+      const inputs = [1, 2, 3, 4].map(i => document.getElementById('input' + i).value);
       const counts = Array(81).fill(0);
-
-      inputs.split(',').forEach(s => {
-        const n = parseInt(s.trim(), 10);
-        if (!isNaN(n) && n >= 1 && n <= 80) counts[n]++;
+      inputs.forEach(input => {
+        input.split(',').forEach(token => {
+          const n = parseInt(token.trim());
+          if (!isNaN(n) && n >= 1 && n <= 80) {
+            counts[n]++;
+          }
+        });
       });
-
-      const mistakes = [];
+      const result = [];
       for (let i = 1; i <= 80; i++) {
-        if (counts[i] >= 3) mistakes.push(i);
+        if (counts[i] >= 3) result.push(i);
       }
-
-      document.getElementById("resultArea").value = mistakes.join(", ");
-
-      const tbody = document.querySelector("#editTable tbody");
-      tbody.innerHTML = "";
-      mistakes.forEach(num => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${num}</td>
-          <td><input type="text" style="width: 100%; border: none;"/></td>
-          <td><input type="text" style="width: 100%; border: none;"/></td>`;
-        tbody.appendChild(row);
-      });
+      document.getElementById('output').value = result.join(', ');
     }
 
-    function escapeCsv(str) {
-      if (!str) return "";
-      const needsQuote = /[",\n\r]/.test(str);
-      const escaped = str.replace(/"/g, '""');
-      return needsQuote ? `"${escaped}"` : escaped;
+    function showEditor() {
+      const output = document.getElementById('output').value.split(',').map(s => s.trim()).filter(s => s);
+      const tbody = document.getElementById('editTableBody');
+      tbody.innerHTML = '';
+      output.forEach(num => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${num}</td><td><input type="text"/></td><td><input type="text"/></td>`;
+        tbody.appendChild(tr);
+      });
+      document.getElementById('editorView').classList.remove('hidden');
+    }
+
+    function hideEditor() {
+      document.getElementById('editorView').classList.add('hidden');
     }
 
     function downloadCSV() {
-      let filename = document.getElementById("filenameField").value.trim();
-      if (!filename) filename = "mistakes.csv";
-      if (!filename.endsWith(".csv")) filename += ".csv";
-
+      let filename = document.getElementById('filenameField').value.trim();
+      if (!filename.endsWith('.csv')) filename += '.csv';
       const rows = ["\uFEFF問題番号,分野,誤答理由・克服方法\r\n"];
-      document.querySelectorAll("#editTable tbody tr").forEach(tr => {
-        const tds = tr.querySelectorAll("td, td input");
+      document.querySelectorAll('#editTableBody tr').forEach(tr => {
+        const tds = tr.querySelectorAll('td');
         const num = tds[0].textContent;
-        const cat = escapeCsv(tds[1].querySelector("input").value);
-        const note = escapeCsv(tds[2].querySelector("input").value);
-        rows.push(`${num},${cat},${note}\r\n`);
+        const cat = tds[1].querySelector('input').value;
+        const note = tds[2].querySelector('input').value;
+        const escaped = [num, cat, note].map(val => {
+          val = val.replace(/"/g, '""');
+          return /[",\n\r]/.test(val) ? `"${val}"` : val;
+        }).join(',');
+        rows.push(escaped + "\r\n");
       });
-
-      const blob = new Blob(rows, { type: "text/csv;charset=utf-8;" });
-      const link = document.createElement("a");
+      const blob = new Blob(rows, { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
       link.download = filename;
       link.click();
-    }
-
-    function showEditorView() {
-      document.getElementById("checkerView").style.display = "none";
-      document.getElementById("editorView").style.display = "block";
-    }
-
-    function showCheckerView() {
-      document.getElementById("editorView").style.display = "none";
-      document.getElementById("checkerView").style.display = "block";
     }
   </script>
 </body>
