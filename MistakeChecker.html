@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>やらかしチェッカー</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 600px;
+      margin: 2em auto;
+      padding: 1em;
+    }
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 0.5em;
+      margin-bottom: 1em;
+    }
+    button {
+      padding: 0.6em 1.2em;
+      margin-right: 1em;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1em;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 0.5em;
+    }
+  </style>
+</head>
+<body>
+  <h1>またやらかしたチェッカー</h1>
+  <p>1〜80の問題番号をカンマ区切りで入力（最大4欄）:</p>
+  <input type="text" id="input1" placeholder="例: 1,2,3">
+  <input type="text" id="input2" placeholder="例: 4,5,6">
+  <input type="text" id="input3" placeholder="例: 7,8,9">
+  <input type="text" id="input4" placeholder="例: 10,11,12">
+  <button onclick="analyzeMistakes()">出力する</button>
+
+  <h3>3回以上間違えた問題:</h3>
+  <textarea id="resultArea" rows="2" readonly></textarea>
+
+  <h3>克服方法編集:</h3>
+  <table id="editTable">
+    <thead>
+      <tr><th>問題番号</th><th>分野</th><th>克服方法</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <button onclick="downloadCSV()">CSV保存</button>
+
+  <script>
+    function analyzeMistakes() {
+      const inputs = ["input1", "input2", "input3", "input4"]
+        .map(id => document.getElementById(id).value)
+        .join(",");
+      const counts = Array(81).fill(0);
+
+      inputs.split(',').forEach(s => {
+        const n = parseInt(s.trim(), 10);
+        if (!isNaN(n) && n >= 1 && n <= 80) counts[n]++;
+      });
+
+      const mistakes = [];
+      for (let i = 1; i <= 80; i++) {
+        if (counts[i] >= 3) mistakes.push(i);
+      }
+
+      document.getElementById("resultArea").value = mistakes.join(", ");
+
+      // 表に反映
+      const tbody = document.querySelector("#editTable tbody");
+      tbody.innerHTML = "";
+      mistakes.forEach(num => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${num}</td>
+          <td><input type="text"/></td>
+          <td><input type="text"/></td>`;
+        tbody.appendChild(row);
+      });
+    }
+
+    function escapeCsv(str) {
+      if (!str) return "";
+      const needsQuote = /[",\n\r]/.test(str);
+      const escaped = str.replace(/"/g, '""');
+      return needsQuote ? `"${escaped}"` : escaped;
+    }
+
+    function downloadCSV() {
+      const rows = ["\uFEFF問題番号,分野,誤答理由・克服方法\r\n"];
+      document.querySelectorAll("#editTable tbody tr").forEach(tr => {
+        const tds = tr.querySelectorAll("td, td input");
+        const num = tds[0].textContent;
+        const cat = escapeCsv(tds[1].querySelector("input").value);
+        const note = escapeCsv(tds[2].querySelector("input").value);
+        rows.push(`${num},${cat},${note}\r\n`);
+      });
+      const blob = new Blob(rows, { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "mistakes.csv";
+      link.click();
+    }
+  </script>
+</body>
+</html>
